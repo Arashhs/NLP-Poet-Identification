@@ -14,6 +14,7 @@ def main():
     nlp.set_parameters(START_SYMBOL, END_SYMBOL, WORDS_THRESHOLD, L1, L2, L3, E)
     test = nlp.Language("train_set\\test.txt")
     test.build_unigram_model()
+    test.build_bigram_model()
     print(test.unigram_model)
 
 

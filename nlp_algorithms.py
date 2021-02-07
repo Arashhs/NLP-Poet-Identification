@@ -33,13 +33,17 @@ class Language:
     def init_dict(self, file_name):
         my_dict = {}
         with open(file_name, encoding="utf-8", mode="rt") as reader:
+            num_lines = 0
             for line in reader:
+                num_lines +=1
                 words = line.split()
                 for word in words:
                     if not word in my_dict:
                         my_dict[word] = 1
                     else:
                         my_dict[word] += 1
+        my_dict[START_SYMBOL] = num_lines
+        my_dict[END_SYMBOL] = num_lines
         my_dict = {i:my_dict[i] for i in my_dict if my_dict[i] > WORDS_THRESHOLD}
         return my_dict
 
@@ -48,6 +52,7 @@ class Language:
     # calculating the unigram probabilities for our dictionary
     def build_unigram_model(self):
         words_dict = self.words_dict
+        words_dict = {i:words_dict[i] for i in words_dict if i != START_SYMBOL and i != END_SYMBOL}
         sum_count = sum(words_dict.values())
         unigram_model = {i:words_dict[i]/sum_count for i in words_dict}
         self.unigram_model = unigram_model
@@ -76,7 +81,7 @@ class Language:
 
 
     # calculating the bigram probabilities for our dictionary
-    def bigram_model(self):
+    def build_bigram_model(self):
         bigram_model = {}
         with open(self.file_name, encoding="utf-8", mode="rt") as reader:
             for sentence in reader:
@@ -86,21 +91,39 @@ class Language:
                 for i in range(len(words)-1):
                     bigram_tokens.append([words[i], words[i+1]])
                 for bigram_token in bigram_tokens:
-                    if bigram_token[0] 
-                    token = bigram_token_str(bigram_token)
-                    if not token in bigram_model:
-                        bigram_model[token] = 1/words_dict[bigram_token[0]]
-                    else:
-                        bigram_model[token] += 1/words_dict[bigram_token[0]]
+                    if self.word_exists(bigram_token[0]) and self.word_exists(bigram_token[1]):
+                        token = bigram_token_str(bigram_token)
+                        if not token in bigram_model:
+                            bigram_model[token] = 1/self.word_count(bigram_token[0])
+                        else:
+                            bigram_model[token] += 1/self.word_count(bigram_token[0])
                 
-                for bigram_token in bigram_tokens:
+                '''for bigram_token in bigram_tokens:
                     token = bigram_token_str(bigram_token)
                     if bigram_token[1] in unigram_model:
                         unigram_prob = unigram_model[bigram_token[1]]
                     else:
                         unigram_prob = 0
-                    bigram_model[token] = l3*bigram_model[token] + l2*unigram_prob + l1*E
-        return bigram_model
+                    bigram_model[token] = l3*bigram_model[token] + l2*unigram_prob + l1*E'''
+        self.bigram_model = bigram_model
+
+    
+    # getting the raw bigram probability
+    def raw_bigram_prob(self, word1, word2):
+        token = bigram_token_str([word1, word2])
+        if token in self.bigram_model:
+            return self.bigram_model[token]
+        else:
+            return 0
+
+
+    # getting the bigram probability using the back-off model
+    def bigram_prob(self, word1, word2):
+        bi_prob = self.raw_bigram_prob(word1, word2)
+        uni_prob = self.uni_prob(word1)
+        prob = L3*bi_prob + L2*uni_prob + L1*E
+        return prob
+
 
 
 # converting bigram token to string
