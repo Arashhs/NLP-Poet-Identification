@@ -44,6 +44,7 @@ class Language:
                         my_dict[word] += 1
         my_dict[START_SYMBOL] = num_lines
         my_dict[END_SYMBOL] = num_lines
+        # deleting_part = {i:my_dict[i] for i in my_dict if my_dict[i] <= WORDS_THRESHOLD}
         my_dict = {i:my_dict[i] for i in my_dict if my_dict[i] > WORDS_THRESHOLD}
         return my_dict
 
@@ -110,7 +111,7 @@ class Language:
     
     # getting the raw bigram probability
     def raw_bigram_prob(self, word1, word2):
-        token = bigram_token_str([word1, word2])
+        token = bigram_token_str([word2, word1])
         if token in self.bigram_model:
             return self.bigram_model[token]
         else:
@@ -120,7 +121,7 @@ class Language:
     # getting the bigram probability using the back-off model
     def bigram_prob(self, word1, word2):
         bi_prob = self.raw_bigram_prob(word1, word2)
-        uni_prob = self.uni_prob(word1)
+        uni_prob = self.unigram_prob(word1)
         prob = L3*bi_prob + L2*uni_prob + L1*E
         return prob
 
