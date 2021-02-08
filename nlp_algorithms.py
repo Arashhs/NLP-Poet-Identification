@@ -98,14 +98,7 @@ class Language:
                             bigram_model[token] = 1/self.word_count(bigram_token[0])
                         else:
                             bigram_model[token] += 1/self.word_count(bigram_token[0])
-                
-                '''for bigram_token in bigram_tokens:
-                    token = bigram_token_str(bigram_token)
-                    if bigram_token[1] in unigram_model:
-                        unigram_prob = unigram_model[bigram_token[1]]
-                    else:
-                        unigram_prob = 0
-                    bigram_model[token] = l3*bigram_model[token] + l2*unigram_prob + l1*E'''
+
         self.bigram_model = bigram_model
 
     

@@ -66,7 +66,7 @@ def calculate_accuracy(predicted_labels, orig_labels):
         if predicted_labels[i] == orig_labels[i]:
             corrects += 1
     accuracy = corrects / all_labels
-    return accuracy
+    return accuracy, corrects
 
 
 
@@ -82,17 +82,11 @@ def main():
         poet.build_bigram_model()
     predicted_labels, orig_labels = predict_labels(poets, "test_set\\test_file.txt", TEST_OPTION)
     # predicted_labels, orig_labels = predict_labels(poets, "test_set\\test.txt", TEST_OPTION)
-    accuracy = calculate_accuracy(predicted_labels, orig_labels)
-    print("\nFinished!")
-    print("Accuracy of the predicted model:", accuracy)
+    accuracy, corrects = calculate_accuracy(predicted_labels, orig_labels)
+    print("\nFinished!\n")
+    print("Parameters: λ3: {}, λ2: {}, λ1: {}, ε: {}\n".format(L3, L2, L1, E))
+    print("Accuracy of the predicted model: {}\n\nAll predictions: {}\nCorrect predictions: {}\n\n".format(accuracy, len(orig_labels), corrects))
 
-
-    '''
-    test.build_unigram_model()
-    test.build_bigram_model()
-    print(test.unigram_model)
-    test.bigram_prob("فروغ", "پر")
-    test.bigram_prob("$", "دلاور")'''
 
 
 
